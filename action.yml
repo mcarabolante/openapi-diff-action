@@ -12,18 +12,6 @@ inputs:
   new-spec:
     description: "New specification filename"
     required: true
-  header:
-    description: "Use given header for authorization"
-    required: false
-    default: ""
-  query:
-    description: "Use query param for authorization"
-    required: false
-    default: ""
-  markdown:
-    description: "Export diff as markdown in given file"
-    required: false
-    default: ".tmp/markdown"
   text:
     description: "Export diff as text in given file"
     required: false
@@ -36,22 +24,21 @@ inputs:
 outputs:
   state:
     description: "Output diff state: no_changes, incompatible, compatible"
-    value: ${{steps.state.outputs.compare_state}}
+    value: ${{steps.api_diff.outputs.state}}
 
 runs:
   using: composite
   steps:
     - name: "Run openapi-diff tool"
+      shell: bash
+      id: "api_diff"
       run: |
-        docker run -v "$(pwd):/specs" --rm openapitools/openapi-diff:2.0.1 \
+        echo "state=$(docker run -v "$(pwd):/specs" --rm openapitools/openapi-diff:2.0.1 \
           /specs/${{inputs.old-spec}} \
           /specs/${{inputs.new-spec}} \
-          `if [[ ${{inputs.header}} != '' ]]; then --header ${{inputs.header}}; fi` \
-          `if [[ ${{inputs.query}} != '' ]]; then --query ${{inputs.query}}; fi` \
           `if [[ ${{inputs.fail-on}} != '' ]]; then --fail-on-${{inputs.fail-on}}; fi` \
-          --markdown /specs/${{inputs.markdown}} \
-          --text /specs/${{inputs.text}}
-      shell: bash
+          --text /specs/${{inputs.text}} \
+          --state)" >> "$GITHUB_OUTPUT"
     - name: "Check file existence"
       id: check_files
       uses: andstor/file-existence-action@v3
