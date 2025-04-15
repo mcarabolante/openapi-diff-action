@@ -20,26 +20,14 @@ inputs:
     description: "Use query param for authorization"
     required: false
     default: ""
-  log:
-    description: "Use given level for log (TRACE, DEBUG, INFO, WARN, ERROR, OFF)"
-    required: false
-    default: "ERROR"
   markdown:
     description: "Export diff as markdown in given file"
     required: false
     default: ".tmp/markdown"
-  json:
-    description: "Export diff as JSON in given file"
-    required: false
-    default: ".tmp/json"
   text:
     description: "Export diff as text in given file"
     required: false
     default: '.tmp/text'
-  html:
-    description: "Export diff as HTML in given file"
-    required: false
-    default: '.tmp/html'
   fail-on:
     description: "Fail if API changed but is backward compatible ('changed' value) or changes broke backward compatibility ('incompatible' value)"
     required: false
@@ -61,31 +49,8 @@ runs:
           `if [[ ${{inputs.header}} != '' ]]; then --header ${{inputs.header}}; fi` \
           `if [[ ${{inputs.query}} != '' ]]; then --query ${{inputs.query}}; fi` \
           `if [[ ${{inputs.fail-on}} != '' ]]; then --fail-on-${{inputs.fail-on}}; fi` \
-          --log ${{inputs.log}} \
           --markdown /specs/${{inputs.markdown}} \
-          --json /specs/${{inputs.json}} \
-          --text /specs/${{inputs.text}} \
-          --html /specs/${{inputs.html}}
-      shell: bash
-    - name: "Read output JSON file"
-      id: output_json_file
-      uses: juliangruber/read-file-action@v1
-      with:
-        path: ${{inputs.json}}
-    - name: "Detect compare state"
-      id: "state"
-      run: |
-        compatible_val="${{fromJson(steps.output_json_file.outputs.content).compatible}}"
-        incompatible_val="${{fromJson(steps.output_json_file.outputs.content).incompatible}}"
-        unchanged_val="${{fromJson(steps.output_json_file.outputs.content).unchanged}}"
-
-        if [[ $unchanged_val == 'true' ]]; then
-          echo "::set-output name=compare_state::no_changes"
-        elif [[ $incompatible_val == 'true' ]]; then
-          echo "::set-output name=compare_state::incompatible"
-        elif [[ $compatible_val == 'true' ]]; then
-          echo "::set-output name=compare_state::compatible"
-        fi
+          --text /specs/${{inputs.text}}
       shell: bash
     - name: "Check file existence"
       id: check_files

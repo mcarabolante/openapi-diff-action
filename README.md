@@ -12,7 +12,6 @@ The following example [workflow step](https://help.github.com/en/actions/configu
   with:
     old-spec: "old_spec.json"
     new-spec: "new_spec.json"
-    json: "out.json"
     markdown: "out.md"
 - name: "Print difference state"
   run: echo "Current state: ${{steps.diff_state.outputs.state}}."
@@ -29,7 +28,6 @@ The following input variables options can/must be configured:
 |`query`|Optional|Use given query for authorization. Format: `<property=value>` |`''`|
 |`log`|Optional|Use given level for log. Expected values: (`TRACE`, `DEBUG`, `INFO`, `WARN`, `ERROR`, `OFF`) |`ERROR`|
 |`markdown`|Optional|Export diff as markdown in given file. |`'.tmp/markdown'`|
-|`json`|Optional|Export diff as JSON in given file. |`'.tmp/json'`|
 |`text`|Optional|Export diff as text in given file. |`'.tmp/text'`|
 |`html`|Optional|Export diff as HTML in given file. |`'.tmp/html'`|
 |`fail-on`|Optional|Fail if API changed but is backward compatible (`changed` value) or changes broke backward compatibility (`incompatible` value). |`''`|
