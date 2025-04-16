@@ -12,6 +12,10 @@ inputs:
   new-spec:
     description: "New specification filename"
     required: true
+  markdown:
+    description: "Export diff as markdown in given file"
+    required: false
+    default: ".tmp/markdown"
   text:
     description: "Export diff as text in given file"
     required: false
@@ -37,6 +41,7 @@ runs:
           /specs/${{inputs.old-spec}} \
           /specs/${{inputs.new-spec}} \
           `if [[ ${{inputs.fail-on}} != '' ]]; then --fail-on-${{inputs.fail-on}}; fi` \
+          --markdown /specs/${{inputs.markdown}} \
           --text /specs/${{inputs.text}} \
           --state)" >> "$GITHUB_OUTPUT"
     - name: "Check file existence"
